@@ -22,22 +22,20 @@ How can we implement this and reduce redundancy?
 
 Any field marked with `PartialAllowed` will be nullable in the partial table, and required in the complete table.
 
+A partial table is any table that sub-classes with `PartialTable`. 
+
 ## Example
 
 ```python
 from typing import Annotated
-from abc import ABC
 from sqlmodel import Field, SQLModel
-from partial_table import PartialBase, PartialAllowed, PartialTable
+from partial_tables import PartialBase, PartialAllowed, PartialTable
 
-class Base(ABC, SQLModel):
-    """Base class for all models."""
+
+class BusinessBase(PartialBase, SQLModel):
+    """Base class for all business models."""
 
     id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})
-
-
-class BusinessBase(PartialBase, Base):
-    """Base class for all business models."""
 
     business_name: str
     city: Annotated[str, PartialAllowed()] = Field()
