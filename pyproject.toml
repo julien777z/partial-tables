@@ -1,0 +1,28 @@
+[project]
+name = "partial-tables"
+version = "0.0.1a2"
+description = "Partial Table Models for SQLAlchemy"
+authors = [
+    { name = "Julien Kmec", email = "me@julien.dev" },
+]
+readme = "README.md"
+packages = [{include = "partial_tables"}]
+requires-python = ">=3.9,<4.0.0"
+dependencies = [
+    "sqlalchemy (>=2.0.40,<3.0.0)",
+    "sqlmodel (>=0.0.24,<0.0.25)",
+    "sqlalchemy-utils (>=0.41.2,<0.42.0)",
+    "pytest-asyncio (>=0.26.0,<0.27.0)",
+    "pytest (>=8.3.5,<9.0.0)",
+    "pytest-docker (>=3.2.1,<4.0.0)",
+    "pytest-sqlalchemy (>=0.3.0,<0.4.0)",
+    "psycopg2-binary (>=2.9.10,<3.0.0)",
+    "pytest-cov (>=6.1.1,<7.0.0)",
+]
+
+[project.urls]
+repository = "https://github.com/julien777z/partial-tables"
+
+[build-system]
+requires = ["poetry-core", "setuptools"]
+build-backend = "poetry.core.masonry.api"
