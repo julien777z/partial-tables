@@ -1,12 +1,12 @@
 [project]
-name = "partial-table"
-version = "0.0.1a0"
+name = "partial-tables"
+version = "0.0.1a1"
 description = "Partial Table Models for SQLAlchemy"
 authors = [
     { name = "Julien Kmec", email = "me@julien.dev" },
 ]
 readme = "README.md"
-packages = [{include = "partial_table"}]
+packages = [{include = "partial_tables"}]
 requires-python = ">=3.9,<4.0.0"
 dependencies = [
     "sqlalchemy (>=2.0.40,<3.0.0)",
@@ -19,6 +19,9 @@ dependencies = [
     "psycopg2-binary (>=2.9.10,<3.0.0)",
     "pytest-cov (>=6.1.1,<7.0.0)",
 ]
+
+[project.urls]
+repository = "https://github.com/julien777z/partial-tables"
 
 [build-system]
 requires = ["poetry-core", "setuptools"]

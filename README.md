@@ -5,7 +5,7 @@ Partial Tables for SQLAlchemy
 ## Installation
 
 ```bash
-pip install partial-table
+pip install partial-tables
 ```
 
 ## Scenario
