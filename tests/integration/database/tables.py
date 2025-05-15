@@ -1,7 +1,7 @@
 from typing import Annotated
 from abc import ABC
 from sqlmodel import Field, SQLModel
-from partial_table import PartialBase, PartialAllowed, PartialTable
+from partial_tables import PartialBase, PartialAllowed, PartialTable
 
 __all__ = [
     "Base",
