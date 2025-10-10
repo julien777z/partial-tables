@@ -21,7 +21,7 @@ class PartialBase(SQLModel):
         for name, annotation in type_hints.items():
             if get_origin(annotation) is Annotated:
                 if any(isinstance(a, PartialAllowed) for a in get_args(annotation)):
-                    field = cls.__fields__.get(name)
+                    field = cls.model_fields.get(name)
 
                     if field is None:
                         continue
