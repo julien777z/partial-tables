@@ -7,7 +7,7 @@ authors = [
 ]
 readme = "README.md"
 packages = [{include = "partial_tables"}]
-requires-python = ">=3.9,<4.0.0"
+requires-python = ">=3.9,<3.15"
 dependencies = [
     "sqlalchemy>=2.0.40",
     "sqlmodel>=0.0.24",
