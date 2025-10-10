@@ -26,4 +26,11 @@ class PartialBase(SQLModel):
                     if field is None:
                         continue
 
-                    field.nullable = is_partial_table
+                    if is_partial_table:
+                        # Make the field optional at the model level
+                        field.default = None
+
+                        # Ensure the generated SQLAlchemy Column is nullable
+                        sa_kwargs = getattr(field, "sa_column_kwargs", None) or {}
+                        sa_kwargs["nullable"] = True
+                        field.sa_column_kwargs = sa_kwargs
