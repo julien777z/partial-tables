@@ -18,19 +18,15 @@ class PartialBase(SQLModel):
         is_partial_table = issubclass(cls, PartialTable)
         type_hints = get_type_hints(cls, include_extras=True)
 
+        fields = cls.model_fields
+
         for name, annotation in type_hints.items():
             if get_origin(annotation) is Annotated:
                 if any(isinstance(a, PartialAllowed) for a in get_args(annotation)):
-                    field = cls.__fields__.get(name)
+                    field = fields.get(name)
 
                     if field is None:
                         continue
 
                     if is_partial_table:
-                        # Make the field optional at the model level
                         field.default = None
-
-                        # Ensure the generated SQLAlchemy Column is nullable
-                        sa_kwargs = getattr(field, "sa_column_kwargs", None) or {}
-                        sa_kwargs["nullable"] = True
-                        field.sa_column_kwargs = sa_kwargs
