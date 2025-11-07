@@ -14,8 +14,8 @@ class SQLModelBusinessBase(PartialSQLModelMixin, SQLModel):
 
     business_id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})
     business_name: str
-    city: Annotated[str, PartialAllowed()] = Field()
-    address: Annotated[str, PartialAllowed()] = Field()
+    city: Annotated[str, PartialAllowed()] = Field(unique=True)
+    address: Annotated[str, PartialAllowed()] = Field(index=True)
 
 
 class BusinessDraft(SQLModelBusinessBase, PartialTable, table=True):
