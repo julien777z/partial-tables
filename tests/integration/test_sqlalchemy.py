@@ -23,6 +23,17 @@ class TestSQLAlchemyPartialTable:
         sqlalchemy_session.add(model(**kwargs))
         sqlalchemy_session.commit()
 
+    def test_columns_nullable_flags(self):
+        """Columns should reflect nullability based on PartialAllowed markers."""
+
+        draft_cols = {c.name: c for c in BusinessDraft.__table__.columns}
+        full_cols = {c.name: c for c in Business.__table__.columns}
+
+        assert draft_cols["city"].nullable is True
+        assert draft_cols["address"].nullable is True
+
+        assert full_cols["city"].nullable is False
+        assert full_cols["address"].nullable is False
     def test_partial_table_nullable(self, sqlalchemy_session: Session):
         """Test that the SQLAlchemy partial table allows nullable fields."""
 
