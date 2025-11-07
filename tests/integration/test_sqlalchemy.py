@@ -34,6 +34,20 @@ class TestSQLAlchemyPartialTable:
 
         assert full_cols["city"].nullable is False
         assert full_cols["address"].nullable is False
+
+    def test_preserves_column_attributes_on_partial(self):
+        """Ensure attributes like unique/index are preserved on Partial tables."""
+
+        draft_cols = {c.name: c for c in BusinessDraft.__table__.columns}
+        full_cols = {c.name: c for c in Business.__table__.columns}
+
+        assert draft_cols["city"].unique is True
+        assert draft_cols["address"].index is True
+
+        # Also ensure the non-partial table still has the same attributes
+        assert full_cols["city"].unique is True
+        assert full_cols["address"].index is True
+
     def test_partial_table_nullable(self, sqlalchemy_session: Session):
         """Test that the SQLAlchemy partial table allows nullable fields."""
 

@@ -1,5 +1,4 @@
 from typing import Annotated, Optional, get_args, get_origin, get_type_hints
-from sqlalchemy.orm import mapped_column
 
 
 class PartialAllowed:
@@ -60,19 +59,30 @@ class PartialSQLAlchemyMixin:
 
         type_hints = get_type_hints(cls, include_extras=True)
         raw_annotations = dict(getattr(cls, "__annotations__", {}))
+        updated_nullable_names: list[str] = []
 
         for name, ann in type_hints.items():
             new_ann = _rewrite_with_optional(ann)
 
             if new_ann is not ann:
                 raw_annotations[name] = new_ann
-                # Override the inherited mapped_column assignment on this subclass
-                setattr(cls, name, mapped_column(nullable=True))
+                updated_nullable_names.append(name)
 
         if raw_annotations:
             cls.__annotations__ = raw_annotations
 
+        # Run Declarative mapping so that __table__ / columns are available
         super().__init_subclass__(**kwargs)
+
+        # After mapping, mutate only the nullability of the actual Column objects.
+        # This preserves other column options (unique, index, defaults, etc.).
+        if updated_nullable_names:
+            table = getattr(cls, "__table__", None)
+            if table is not None:
+                for name in updated_nullable_names:
+                    col = table.c.get(name)
+                    if col is not None and not col.primary_key:
+                        col.nullable = True
 
 
 class PartialSQLModelMixin:
