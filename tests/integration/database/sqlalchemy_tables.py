@@ -23,8 +23,8 @@ class BusinessBase(PartialSQLAlchemyMixin, SQLAlchemyBusinessBase):
 
     business_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     business_name: Mapped[str] = mapped_column()
-    city: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()
-    address: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()
+    city: Mapped[Annotated[str, PartialAllowed()]] = mapped_column(unique=True)
+    address: Mapped[Annotated[str, PartialAllowed()]] = mapped_column(index=True)
 
 
 class BusinessDraft(BusinessBase, PartialTable):
