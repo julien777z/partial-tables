@@ -1,6 +1,5 @@
 from typing import Annotated
-from abc import ABC
-from sqlmodel import Field, SQLModel
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from partial_tables import PartialBase, PartialAllowed, PartialTable
 
 __all__ = [
@@ -11,23 +10,26 @@ __all__ = [
 ]
 
 
-class Base(ABC, SQLModel):
+class Base(DeclarativeBase):
     """Base class for all models."""
 
-    id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})
+    __abstract__ = True
 
 
 class BusinessBase(PartialBase, Base):
     """Base class for all business models."""
 
-    business_name: str
-    city: Annotated[str, PartialAllowed()] = Field()
-    address: Annotated[str, PartialAllowed()] = Field()
+    __abstract__ = True
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    business_name: Mapped[str] = mapped_column()
+    city: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()
+    address: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()
 
 
-class BusinessDraft(BusinessBase, PartialTable, table=True):
+class BusinessDraft(BusinessBase, PartialTable):
     __tablename__ = "business_draft"
 
 
-class Business(BusinessBase, table=True):
+class Business(BusinessBase):
     __tablename__ = "business"
