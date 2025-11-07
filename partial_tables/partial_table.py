@@ -108,25 +108,14 @@ class PartialSQLModelMixin:
             super().__init_subclass__(**kwargs)
             return
 
-        # Rewrite annotations to Optional[...] and ensure the corresponding Field(...)
-        # value from bases is present on the subclass namespace so SQLModel preserves
-        # unique/index/defaults when mapping.
         type_hints = get_type_hints(cls, include_extras=True)
         raw_annotations = dict(getattr(cls, "__annotations__", {}))
-        values_to_copy: dict[str, object] = {}
 
         for name, ann in type_hints.items():
             new_ann = _rewrite_with_optional(ann)
 
             if new_ann is not ann:
                 raw_annotations[name] = new_ann
-
-                # If value is inherited, copy it into subclass namespace
-                if name not in cls.__dict__ and hasattr(cls, name):
-                    values_to_copy[name] = getattr(cls, name)
-
-        for name, value in values_to_copy.items():
-            setattr(cls, name, value)
 
         if raw_annotations:
             cls.__annotations__ = raw_annotations
