@@ -18,7 +18,7 @@ class TestSQLModelPartialTableIntegration:
         sqlmodel_session.add(model(**kwargs))
         sqlmodel_session.commit()
 
-    def test_columns_nullable_flags(self, sqlmodel_session: Session):
+    def test_columns_nullable_flags(self):
         """Columns should reflect nullability based on PartialAllowed markers."""
 
         draft_cols = {c.name: c for c in BusinessDraft.__table__.columns}
