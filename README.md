@@ -2,6 +2,8 @@
 
 Partial Tables for SQLAlchemy and SQLModel
 
+[![Coverage](https://img.shields.io/codecov/c/github/julien777z/partial-tables?branch=main&label=Coverage)](https://codecov.io/gh/julien777z/partial-tables)
+
 ## Installation
 
 ```bash
