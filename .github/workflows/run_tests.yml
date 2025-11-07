@@ -29,6 +29,8 @@ jobs:
           poetry run pytest --cov=partial_tables --cov-branch --cov-report=xml
 
       - name: Upload coverage reports to Codecov
+        # Only run Codecov once
+        if: ${{ matrix.python-version == '3.11' }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
