@@ -43,7 +43,7 @@ def _rewrite_with_optional(a: object) -> object:
     return a
 
 
-class PartialBase:
+class PartialSQLAlchemyMixin:
     """
     Base class for all partial tables.
 
@@ -72,7 +72,7 @@ class PartialBase:
         super().__init_subclass__(**kwargs)
 
 
-class PartialSQLModelBase:
+class PartialSQLModelMixin:
     """
     Base class for SQLModel partial tables.
     Converts fields marked with PartialAllowed() to Optional[...] so SQLModel

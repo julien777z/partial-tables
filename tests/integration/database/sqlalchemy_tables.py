@@ -1,6 +1,6 @@
 from typing import Annotated
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from partial_tables import PartialBase, PartialAllowed, PartialTable
+from partial_tables import PartialSQLAlchemyMixin, PartialAllowed, PartialTable
 
 __all__ = [
     "SQLAlchemyBusinessBase",
@@ -16,7 +16,7 @@ class SQLAlchemyBusinessBase(DeclarativeBase):
     __abstract__ = True
 
 
-class BusinessBase(PartialBase, SQLAlchemyBusinessBase):
+class BusinessBase(PartialSQLAlchemyMixin, SQLAlchemyBusinessBase):
     """Base class for all business models."""
 
     __abstract__ = True

@@ -1,6 +1,6 @@
 from typing import Annotated
 from sqlmodel import SQLModel, Field
-from partial_tables import PartialSQLModelBase, PartialAllowed, PartialTable
+from partial_tables import PartialSQLModelMixin, PartialAllowed, PartialTable
 
 __all__ = [
     "SQLModelBusinessBase",
@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 
-class SQLModelBusinessBase(PartialSQLModelBase, SQLModel):
+class SQLModelBusinessBase(PartialSQLModelMixin, SQLModel):
     """Base model shared by both tables."""
 
     id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})

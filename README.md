@@ -29,14 +29,14 @@ A partial table is any table that sub-classes with `PartialTable`.
 ```python
 from typing import Annotated
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from partial_tables import PartialBase, PartialAllowed, PartialTable
+from partial_tables import PartialSQLAlchemyMixin, PartialAllowed, PartialTable
 
 
 class Base(DeclarativeBase):
     __abstract__ = True
 
 
-class BusinessBase(PartialBase, Base):
+class BusinessBase(PartialSQLAlchemyMixin, Base):
     """Base class for all business models."""
 
     __abstract__ = True
@@ -57,6 +57,29 @@ class Business(BusinessBase):
 ```
 
 `Business` has all required (NOT NULL) columns, and `BusinessDraft` has every field marked with `PartialAllowed` as nullable.
+
+## Example (SQLModel)
+
+```python
+from typing import Annotated
+from sqlmodel import SQLModel, Field
+from partial_tables import PartialSQLModelMixin, PartialAllowed, PartialTable
+
+
+class BusinessBase(PartialSQLModelMixin, SQLModel):
+    id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})
+    business_name: str
+    city: Annotated[str, PartialAllowed()] = Field()
+    address: Annotated[str, PartialAllowed()] = Field()
+
+
+class BusinessDraft(BusinessBase, PartialTable, table=True):
+    __tablename__ = "business_draft"
+
+
+class Business(BusinessBase, table=True):
+    __tablename__ = "business"
+```
 
 ## License
 MIT
