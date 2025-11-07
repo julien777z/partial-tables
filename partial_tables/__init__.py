@@ -1,1 +1,6 @@
-from .partial_table import PartialAllowed, PartialTable, PartialBase
+from .partial_table import (
+    PartialAllowed,
+    PartialTable,
+    PartialBase,
+    PartialSQLModelBase,
+)

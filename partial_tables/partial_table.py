@@ -14,6 +14,35 @@ class PartialTable:
     """
 
 
+def _rewrite_with_optional(a: object) -> object:
+    origin = get_origin(a)
+
+    if origin is Annotated:
+        base, *meta = get_args(a)
+
+        if any(isinstance(m, PartialAllowed) for m in meta):
+            return Annotated[Optional[base], *meta]
+
+        new_base = _rewrite_with_optional(base)
+
+        if new_base is not base:
+            return Annotated[new_base, *meta]
+
+        return a
+
+    args = get_args(a)
+
+    if not args:
+        return a
+
+    new_args = tuple(_rewrite_with_optional(x) for x in args)
+
+    if new_args != args and origin is not None and hasattr(origin, "__class_getitem__"):
+        return origin[tuple(new_args)]  # type: ignore[index]
+
+    return a
+
+
 class PartialBase:
     """
     Base class for all partial tables.
@@ -29,37 +58,6 @@ class PartialBase:
         type_hints = get_type_hints(cls, include_extras=True)
         raw_annotations = dict(getattr(cls, "__annotations__", {}))
 
-        def _rewrite_with_optional(a: object) -> object:
-            origin = get_origin(a)
-
-            if origin is Annotated:
-                base, *meta = get_args(a)
-
-                if any(isinstance(m, PartialAllowed) for m in meta):
-                    return Annotated[
-                        Optional[base], mapped_column(nullable=True), *meta
-                    ]
-
-                new_base = _rewrite_with_optional(base)
-
-                if new_base is not base:
-                    return Annotated[new_base, *meta]
-
-                return a
-
-            args = get_args(a)
-
-            if not args:
-                return a
-
-            new_args = tuple(_rewrite_with_optional(x) for x in args)
-
-            if new_args != args and origin is not None:
-                if hasattr(origin, "__class_getitem__"):
-                    return origin[tuple(new_args)]  # type: ignore[index]
-
-            return a
-
         for name, ann in type_hints.items():
             new_ann = _rewrite_with_optional(ann)
 
@@ -67,6 +65,33 @@ class PartialBase:
                 raw_annotations[name] = new_ann
                 # Override the inherited mapped_column assignment on this subclass
                 setattr(cls, name, mapped_column(nullable=True))
+
+        if raw_annotations:
+            cls.__annotations__ = raw_annotations
+
+        super().__init_subclass__(**kwargs)
+
+
+class PartialSQLModelBase:
+    """
+    Base class for SQLModel partial tables.
+    Converts fields marked with PartialAllowed() to Optional[...] so SQLModel
+    derives NULL columns without mutating FieldInfo or columns directly.
+    """
+
+    def __init_subclass__(cls, **kwargs):
+        if not issubclass(cls, PartialTable):
+            super().__init_subclass__(**kwargs)
+            return
+
+        type_hints = get_type_hints(cls, include_extras=True)
+        raw_annotations = dict(getattr(cls, "__annotations__", {}))
+
+        for name, ann in type_hints.items():
+            new_ann = _rewrite_with_optional(ann)
+
+            if new_ann is not ann:
+                raw_annotations[name] = new_ann
 
         if raw_annotations:
             cls.__annotations__ = raw_annotations
