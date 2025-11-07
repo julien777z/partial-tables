@@ -1,7 +1,7 @@
 [project]
 name = "partial-tables"
 version = "0.0.1a2"
-description = "Partial Table Models for SQLAlchemy"
+description = "Partial Table Models for SQLAlchemy and SQLModel"
 authors = [
     { name = "Julien Kmec", email = "me@julien.dev" },
 ]
