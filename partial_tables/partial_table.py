@@ -78,11 +78,22 @@ class PartialSQLAlchemyMixin:
         # This preserves other column options (unique, index, defaults, etc.).
         if updated_nullable_names:
             table = getattr(cls, "__table__", None)
-            if table is not None:
-                for name in updated_nullable_names:
-                    col = table.c.get(name)
-                    if col is not None and not col.primary_key:
-                        col.nullable = True
+
+            if table is None:
+                raise ValueError("__table__ is not available")
+
+            for name in updated_nullable_names:
+                col = table.c[name]
+
+                if col is None:
+                    raise ValueError(f"Column {name} is not available")
+
+                if col.primary_key:
+                    raise ValueError(
+                        f"Column {name} is a primary key and cannot be nullable"
+                    )
+
+                col.nullable = True  # type: ignore[attr-defined]
 
 
 class PartialSQLModelMixin:
