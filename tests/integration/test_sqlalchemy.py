@@ -32,10 +32,11 @@ class TestSQLAlchemyPartialTable:
         self._create_business(
             BusinessDraft,
             sqlalchemy_session,
+            business_id=1,
             business_name="Business 1",
         )
 
-        business = sqlalchemy_session.query(BusinessDraft).first()
+        business = sqlalchemy_session.get(BusinessDraft, 1)
 
         assert business.business_name == "Business 1"
         assert business.city is None
@@ -48,6 +49,7 @@ class TestSQLAlchemyPartialTable:
             self._create_business(
                 Business,
                 sqlalchemy_session,
+                business_id=2,
                 business_name="Business 2",
             )
 
@@ -57,13 +59,14 @@ class TestSQLAlchemyPartialTable:
         self._create_business(
             Business,
             sqlalchemy_session,
-            business_name="Business 2",
-            city="City 2",
-            address="Address 2",
+            business_id=3,
+            business_name="Business 3",
+            city="City 3",
+            address="Address 3",
         )
 
-        business = sqlalchemy_session.query(Business).first()
+        business = sqlalchemy_session.get(Business, 3)
 
-        assert business.business_name == "Business 2"
-        assert business.city == "City 2"
-        assert business.address == "Address 2"
+        assert business.business_name == "Business 3"
+        assert business.city == "City 3"
+        assert business.address == "Address 3"

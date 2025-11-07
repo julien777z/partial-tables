@@ -21,7 +21,7 @@ class BusinessBase(PartialSQLAlchemyMixin, SQLAlchemyBusinessBase):
 
     __abstract__ = True
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    business_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     business_name: Mapped[str] = mapped_column()
     city: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()
     address: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()

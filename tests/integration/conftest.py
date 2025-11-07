@@ -79,7 +79,8 @@ def sqlalchemy_session(
 ) -> Session:
     """Create a SQLAlchemy engine."""
 
-    SQLAlchemyBusinessBase.metadata.create_all(engine)
+    SQLAlchemyBusinessBase.metadata.drop_all(engine)  # start from scratch
+    SQLAlchemyBusinessBase.metadata.create_all(engine)  # create tables
 
     yield create_session
 
@@ -93,7 +94,8 @@ def sqlmodel_session(
 ) -> Session:
     """Create a SQLModel engine."""
 
-    SQLModelBusinessBase.metadata.create_all(engine)
+    SQLModelBusinessBase.metadata.drop_all(engine)  # start from scratch
+    SQLModelBusinessBase.metadata.create_all(engine)  # create tables
 
     yield create_session
 
