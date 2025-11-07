@@ -1,6 +1,8 @@
 # SQLAlchemy Partial Tables
 
-Partial Tables for SQLAlchemy
+Partial Tables for SQLAlchemy and SQLModel
+
+[![Coverage](https://img.shields.io/codecov/c/github/julien777z/partial-tables?branch=main&label=Coverage)](https://codecov.io/gh/julien777z/partial-tables)
 
 ## Installation
 
@@ -22,21 +24,52 @@ How can we implement this and reduce redundancy?
 
 Any field marked with `PartialAllowed` will be nullable in the partial table, and required in the complete table.
 
-A partial table is any table that sub-classes with `PartialTable`. 
+A partial table is any table that sub-classes with `PartialTable`.
 
-## Example
+## Example (SQLAlchemy Declarative)
 
 ```python
 from typing import Annotated
-from sqlmodel import Field, SQLModel
-from partial_tables import PartialBase, PartialAllowed, PartialTable
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from partial_tables import PartialSQLAlchemyMixin, PartialAllowed, PartialTable
 
 
-class BusinessBase(PartialBase, SQLModel):
+class Base(DeclarativeBase):
+    __abstract__ = True
+
+
+class BusinessBase(PartialSQLAlchemyMixin, Base):
     """Base class for all business models."""
 
-    id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})
+    __abstract__ = True
 
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    business_name: Mapped[str] = mapped_column()
+    # Mark fields that may be nullable in the partial table
+    city: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()
+    address: Mapped[Annotated[str, PartialAllowed()]] = mapped_column()
+
+
+class BusinessDraft(BusinessBase, PartialTable):
+    __tablename__ = "business_draft"
+
+
+class Business(BusinessBase):
+    __tablename__ = "business"
+```
+
+`Business` has all required (NOT NULL) columns, and `BusinessDraft` has every field marked with `PartialAllowed` as nullable.
+
+## Example (SQLModel)
+
+```python
+from typing import Annotated
+from sqlmodel import SQLModel, Field
+from partial_tables import PartialSQLModelMixin, PartialAllowed, PartialTable
+
+
+class BusinessBase(PartialSQLModelMixin, SQLModel):
+    id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})
     business_name: str
     city: Annotated[str, PartialAllowed()] = Field()
     address: Annotated[str, PartialAllowed()] = Field()
@@ -48,10 +81,7 @@ class BusinessDraft(BusinessBase, PartialTable, table=True):
 
 class Business(BusinessBase, table=True):
     __tablename__ = "business"
-
 ```
-
-`Business` has all required fields, and `BusinessDraft` has every field marked with `PartialAllowed` as nullable.
 
 ## License
 MIT

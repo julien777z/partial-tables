@@ -4,9 +4,10 @@ from typing import Final
 import pytest
 import pytest_asyncio
 from sqlalchemy_utils import database_exists, create_database
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import Engine
-from tests.integration.database import Base
+from tests.integration.database.sqlalchemy_tables import SQLAlchemyBusinessBase
+from tests.integration.database.sqlmodel_tables import SQLModelBusinessBase
 
 DATABASE_CONNECTION_MAX_TRIES: Final[int] = 10
 
@@ -54,14 +55,13 @@ def wait_for_database(sqlalchemy_connect_url: str) -> None:
         time.sleep(1)
 
 
-@pytest.fixture(scope="function", autouse=True)
-def db_session(
-    start_docker_services,
-    sqlalchemy_connect_url: str,
+@pytest.fixture(scope="function")
+def create_session(
     engine: Engine,
+    sqlalchemy_connect_url: str,
     wait_for_database,
-):
-    """Create a SQLAlchemy engine."""
+) -> Session:
+    """Create the database and tables."""
 
     sessionmaker_ = sessionmaker(bind=engine)
     session = sessionmaker_()
@@ -69,8 +69,34 @@ def db_session(
     if not database_exists(sqlalchemy_connect_url):
         create_database(sqlalchemy_connect_url)
 
-    Base.metadata.create_all(engine)
+    return session
 
-    yield session
 
-    session.close()
+@pytest.fixture(scope="function")
+def sqlalchemy_session(
+    create_session: Session,
+    engine: Engine,
+) -> Session:
+    """Create a SQLAlchemy engine."""
+
+    SQLAlchemyBusinessBase.metadata.drop_all(engine)  # start from scratch
+    SQLAlchemyBusinessBase.metadata.create_all(engine)  # create tables
+
+    yield create_session
+
+    create_session.close()
+
+
+@pytest.fixture(scope="function")
+def sqlmodel_session(
+    create_session: Session,
+    engine: Engine,
+) -> Session:
+    """Create a SQLModel engine."""
+
+    SQLModelBusinessBase.metadata.drop_all(engine)  # start from scratch
+    SQLModelBusinessBase.metadata.create_all(engine)  # create tables
+
+    yield create_session
+
+    create_session.close()

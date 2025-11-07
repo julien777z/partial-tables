@@ -1,2 +1,6 @@
-from .markers import PartialAllowed, PartialTable
-from .partial_table import PartialBase
+from .partial_table import (
+    PartialAllowed,
+    PartialTable,
+    PartialSQLAlchemyMixin,
+    PartialSQLModelMixin,
+)
