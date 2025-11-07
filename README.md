@@ -1,6 +1,6 @@
 # SQLAlchemy Partial Tables
 
-Partial Tables for SQLAlchemy
+Partial Tables for SQLAlchemy and SQLModel
 
 ## Installation
 
