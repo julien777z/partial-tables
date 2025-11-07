@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python and Poetry
         uses: ./.github/actions/setup-env
@@ -44,12 +46,6 @@ jobs:
           echo "current=$current" >> "$GITHUB_OUTPUT"
           echo "new=$newv" >> "$GITHUB_OUTPUT"
 
-      - name: Build package
-        run: poetry build
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-
       - name: Commit version bump and tag
         shell: bash
         run: |
@@ -64,6 +60,12 @@ jobs:
         run: |
           git push origin HEAD
           git push origin "refs/tags/${{ steps.bump.outputs.new }}"
+
+      - name: Build package
+        run: poetry build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
