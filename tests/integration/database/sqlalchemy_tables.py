@@ -3,20 +3,20 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from partial_tables import PartialBase, PartialAllowed, PartialTable
 
 __all__ = [
-    "Base",
+    "SQLAlchemyBusinessBase",
     "BusinessBase",
     "BusinessDraft",
     "Business",
 ]
 
 
-class Base(DeclarativeBase):
-    """Base class for all models."""
+class SQLAlchemyBusinessBase(DeclarativeBase):
+    """Base class for all business models."""
 
     __abstract__ = True
 
 
-class BusinessBase(PartialBase, Base):
+class BusinessBase(PartialBase, SQLAlchemyBusinessBase):
     """Base class for all business models."""
 
     __abstract__ = True

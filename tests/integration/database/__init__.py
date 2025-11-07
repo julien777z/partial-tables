@@ -1,1 +1,2 @@
-from .tables import *
+from .sqlalchemy_tables import *
+from .sqlmodel_tables import *
