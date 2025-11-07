@@ -38,7 +38,10 @@ def _rewrite_with_optional(a: object) -> object:
     new_args = tuple(_rewrite_with_optional(x) for x in args)
 
     if new_args != args and origin is not None and hasattr(origin, "__class_getitem__"):
-        return origin[tuple(new_args)]  # type: ignore[index]
+        # Avoid passing a single-element tuple which would produce origin[(T,)].
+        param = new_args[0] if len(new_args) == 1 else new_args
+
+        return origin[param]  # type: ignore[index]
 
     return a
 
