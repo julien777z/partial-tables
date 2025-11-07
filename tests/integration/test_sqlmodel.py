@@ -2,6 +2,7 @@ import pytest
 from sqlmodel import Session
 from sqlalchemy.exc import IntegrityError
 from tests.integration.database.sqlmodel_tables import BusinessDraft, Business
+from sqlalchemy import UniqueConstraint, Index
 
 
 class TestSQLModelPartialTableIntegration:
@@ -29,6 +30,52 @@ class TestSQLModelPartialTableIntegration:
 
         assert full_cols["city"].nullable is False
         assert full_cols["address"].nullable is False
+
+    def test_preserves_column_attributes_on_partial(self):
+        """Ensure attributes like unique/index are preserved on Partial tables."""
+
+        draft_table = BusinessDraft.__table__
+        full_table = Business.__table__
+
+        def _has_unique(table, col_name: str) -> bool:
+            col = table.c[col_name]
+
+            if getattr(col, "unique", False):
+                return True
+
+            for cons in table.constraints:
+                if isinstance(cons, UniqueConstraint):
+                    cons_cols = [c.key for c in cons.columns]
+
+                    if cons_cols == [col_name]:
+                        return True
+
+            for idx in table.indexes:
+                if isinstance(idx, Index) and idx.unique:
+                    idx_cols = [c.key for c in idx.columns]
+
+                    if idx_cols == [col_name]:
+                        return True
+
+            return False
+
+        def _has_index(table, col_name: str) -> bool:
+            col = table.c[col_name]
+
+            if getattr(col, "index", False):
+                return True
+
+            for idx in table.indexes:
+                if isinstance(idx, Index) and not idx.unique:
+                    idx_cols = [c.key for c in idx.columns]
+
+                    if idx_cols == [col_name]:
+                        return True
+            return False
+
+        # Partial should preserve whatever the base table has
+        assert _has_unique(draft_table, "city") is _has_unique(full_table, "city")
+        assert _has_index(draft_table, "address") is _has_index(full_table, "address")
 
     def test_partial_table_nullable(self, sqlmodel_session: Session):
         """Test that the SQLModel partial table allows nullable fields."""
