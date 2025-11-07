@@ -17,14 +17,11 @@ class TestSQLAlchemyPartialTable:
         model: type[Business],
         sqlalchemy_session: Session,
         **kwargs,
-    ) -> Business:
+    ) -> None:
         """Create a business."""
 
-        business = sqlalchemy_session.add(model(**kwargs))
-
+        sqlalchemy_session.add(model(**kwargs))
         sqlalchemy_session.commit()
-
-        return business
 
     def test_partial_table_nullable(self, sqlalchemy_session: Session):
         """Test that the SQLAlchemy partial table allows nullable fields."""
