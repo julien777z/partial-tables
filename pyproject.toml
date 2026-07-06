@@ -9,10 +9,10 @@ readme = "README.md"
 packages = [{include = "partial_tables"}]
 requires-python = ">=3.11,<3.15"
 dependencies = [
-    "sqlalchemy>=2.0.40",
-    "sqlmodel>=0.0.24",
-    "sqlalchemy-utils>=0.41.2",
-    "psycopg2-binary>=2.9.10",
+    "sqlalchemy>=2.0.51",
+    "sqlmodel>=0.0.39",
+    "sqlalchemy-utils>=0.42.1",
+    "psycopg2-binary>=2.9.12",
 ]
 
 [project.optional-dependencies]
@@ -20,10 +20,10 @@ dev = [
     "black",
     "isort",
     "pylint",
-    "pytest-cov>=6.1.1",
-    "pytest-asyncio>=0.26.0",
-    "pytest>=8.3.5",
-    "pytest-docker>=3.2.1",
+    "pytest-cov>=7.1.0",
+    "pytest-asyncio>=1.4.0",
+    "pytest>=9.1.1",
+    "pytest-docker>=3.2.5",
     "pytest-sqlalchemy>=0.3.0",
 ]
 
