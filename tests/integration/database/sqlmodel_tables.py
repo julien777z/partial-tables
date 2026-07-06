@@ -1,11 +1,16 @@
 from typing import Annotated
-from sqlmodel import SQLModel, Field
-from partial_tables import PartialSQLModelMixin, PartialAllowed, PartialTable
+
+from sqlmodel import Field, SQLModel
+
+from partial_tables import PartialAllowed, PartialSQLModelMixin, PartialTable
 
 __all__ = [
     "SQLModelBusinessBase",
     "BusinessDraft",
     "Business",
+    "OverrideBusinessBase",
+    "OverrideBusinessDraft",
+    "OverrideBusiness",
 ]
 
 
@@ -24,3 +29,20 @@ class BusinessDraft(SQLModelBusinessBase, PartialTable, table=True):
 
 class Business(SQLModelBusinessBase, table=True):
     __tablename__ = "business"
+
+
+class OverrideBusinessBase(PartialSQLModelMixin, SQLModel):
+    """Base model whose partial table redeclares one of its fields."""
+
+    business_id: int = Field(primary_key=True, sa_column_kwargs={"autoincrement": True})
+    city: Annotated[str, PartialAllowed()] = Field(unique=True)
+
+
+class OverrideBusinessDraft(OverrideBusinessBase, PartialTable, table=True):
+    __tablename__ = "override_business_draft"
+
+    city: Annotated[str, PartialAllowed()] = Field(index=True)
+
+
+class OverrideBusiness(OverrideBusinessBase, table=True):
+    __tablename__ = "override_business"

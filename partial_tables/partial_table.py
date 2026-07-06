@@ -1,3 +1,4 @@
+import copy
 from typing import Annotated, Optional, get_args, get_origin, get_type_hints
 
 
@@ -100,7 +101,7 @@ class PartialSQLModelMixin:
     """
     Base class for SQLModel partial tables.
     Converts fields marked with PartialAllowed() to Optional[...] so SQLModel
-    derives NULL columns without mutating FieldInfo or columns directly.
+    derives NULL columns while preserving the field's other column options.
     """
 
     def __init_subclass__(cls, **kwargs):
@@ -110,12 +111,21 @@ class PartialSQLModelMixin:
 
         type_hints = get_type_hints(cls, include_extras=True)
         raw_annotations = dict(getattr(cls, "__annotations__", {}))
+        inherited_fields = getattr(cls, "model_fields", {})
 
         for name, ann in type_hints.items():
             new_ann = _rewrite_with_optional(ann)
 
             if new_ann is not ann:
                 raw_annotations[name] = new_ann
+
+                # A field the partial table declares itself is already its own
+                # and is kept as-is. An inherited field is shared with the
+                # non-partial sibling table, so give the partial table its own
+                # copy to stop SQLModel from mutating a Column shared between
+                # the two tables (which would strip options like unique/index).
+                if name not in cls.__dict__:
+                    setattr(cls, name, copy.deepcopy(inherited_fields[name]))
 
         if raw_annotations:
             cls.__annotations__ = raw_annotations
