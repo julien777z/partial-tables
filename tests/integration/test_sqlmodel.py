@@ -1,8 +1,14 @@
 import pytest
-from sqlmodel import Session
+from sqlalchemy import Index, UniqueConstraint
 from sqlalchemy.exc import IntegrityError
-from tests.integration.database.sqlmodel_tables import BusinessDraft, Business
-from sqlalchemy import UniqueConstraint, Index
+from sqlmodel import Session
+
+from tests.integration.database.sqlmodel_tables import (
+    Business,
+    BusinessDraft,
+    OverrideBusiness,
+    OverrideBusinessDraft,
+)
 
 
 class TestSQLModelPartialTableIntegration:
@@ -73,9 +79,29 @@ class TestSQLModelPartialTableIntegration:
                         return True
             return False
 
-        # Partial should preserve whatever the base table has
-        assert _has_unique(draft_table, "city") is _has_unique(full_table, "city")
-        assert _has_index(draft_table, "address") is _has_index(full_table, "address")
+        # The non-partial table carries the unique/index options from the base.
+        assert _has_unique(full_table, "city") is True
+        assert _has_index(full_table, "address") is True
+
+        # The partial table must preserve those same options while making the
+        # columns nullable, and must not share them destructively with its sibling.
+        assert _has_unique(draft_table, "city") is True
+        assert _has_index(draft_table, "address") is True
+        assert draft_table.c["city"].nullable is True
+        assert draft_table.c["address"].nullable is True
+
+    def test_partial_table_field_redeclaration_overrides_base(self):
+        """A field redeclared on the partial table keeps its own options, not the base's."""
+
+        draft_city = OverrideBusinessDraft.__table__.c["city"]
+        full_city = OverrideBusiness.__table__.c["city"]
+
+        assert full_city.unique is True
+        assert full_city.nullable is False
+
+        assert draft_city.index is True
+        assert draft_city.unique is not True
+        assert draft_city.nullable is True
 
     def test_partial_table_nullable(self, sqlmodel_session: Session):
         """Test that the SQLModel partial table allows nullable fields."""

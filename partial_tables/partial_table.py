@@ -119,10 +119,12 @@ class PartialSQLModelMixin:
             if new_ann is not ann:
                 raw_annotations[name] = new_ann
 
-                # Give the partial table its own FieldInfo so SQLModel does not
-                # mutate a Column shared with the non-partial sibling table,
-                # which would strip options like unique/index.
-                if name in inherited_fields:
+                # A field the partial table declares itself is already its own
+                # and is kept as-is. An inherited field is shared with the
+                # non-partial sibling table, so give the partial table its own
+                # copy to stop SQLModel from mutating a Column shared between
+                # the two tables (which would strip options like unique/index).
+                if name not in cls.__dict__:
                     setattr(cls, name, copy.deepcopy(inherited_fields[name]))
 
         if raw_annotations:
