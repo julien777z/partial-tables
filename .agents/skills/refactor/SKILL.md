@@ -7,6 +7,10 @@ description: Run a large-scale, whole-repository refactor — code simplificatio
 
 A whole-codebase refactor pass. **Everything is in scope.** The goal is to leave the implementation dramatically simpler, more consistent, and free of slop — without changing behavior.
 
+## Dependencies
+
+- `code-simplify` — apply the complete simplification rubric across the repository.
+
 ## Step 1 — Discover the scope
 
 Enumerate the repository's top-level areas (for example `services/`, `packages/`, `apps/`, `workers/`, `src/`, `scripts/` — whatever this repository actually has). Skip generated code (generated clients, lockfiles, build artifacts) and vendored dependencies.
