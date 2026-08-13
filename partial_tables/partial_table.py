@@ -90,9 +90,7 @@ class PartialSQLAlchemyMixin:
                     raise ValueError(f"Column {name} is not available")
 
                 if col.primary_key:
-                    raise ValueError(
-                        f"Column {name} is a primary key and cannot be nullable"
-                    )
+                    raise ValueError(f"Column {name} is a primary key and cannot be nullable")
 
                 col.nullable = True  # type: ignore[attr-defined]
 
