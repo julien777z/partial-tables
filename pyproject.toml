@@ -9,8 +9,8 @@ readme = "README.md"
 packages = [{include = "partial_tables"}]
 requires-python = ">=3.11,<3.15"
 dependencies = [
-    "sqlalchemy>=2.0.51",
-    "sqlmodel>=0.0.39",
+    "sqlalchemy>=2.0.52",
+    "sqlmodel>=0.0.42",
     "sqlalchemy-utils>=0.42.1",
     "psycopg2-binary>=2.9.12",
 ]
